@@ -18,6 +18,7 @@
 #[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 import os.path
 import shutil
+import glob
 
 class Filer:
     """
@@ -82,7 +83,27 @@ class Filer:
             for fl in files:
                 if not os.path.isfile(fl): return False
                 
-        return True  
+        return True
+    
+    def searchFilesMatchingPattern(self, pathToSearch, pattern):
+        """
+        Use glob module to find files matching a particular pattern
+        
+        @param pathToSearch: path (only) to use in search
+        @type pathToSearch: String
+        
+        @param pattern: pattern to use when searching for file(s)
+        @type pattern: String
+        
+        @return List
+        """
+        if self.directoryExists(pathToSearch):
+            searchfor = os.path.join(pathToSearch, pattern)
+            return glob.glob(searchfor)           
+        else:
+            self._errMsg = "The path to search '{pathToSearch}' does not exist!".format(pathToSearch=pathToSearch)
+            
+        return None
 
     def copy(self, pathToSourceFile, sourceFileName, pathToNewFile, newFileName, makeNewPath=False):
         """
@@ -108,13 +129,13 @@ class Filer:
         self._makenewdir = makeNewPath
         self._srcfilefull = os.path.join(pathToSourceFile, sourceFileName)
         self._newfilefull = os.path.join(pathToNewFile, newFileName)
-        
+               
         if not self.filesExist(self._srcfilefull):
             self._errMsg = "Source file '{sourceFileName}' at path '{pathToSourceFile}' does not exist or is invalid!".format(sourceFileName=sourceFileName, pathToSourceFile=pathToSourceFile) 
             return False
         
         if not makeNewPath and not self.directoryExists(pathToNewFile):
-            self._errMsg = "The path to new file '{pathToNewFile}' must exist!"
+            self._errMsg = "The path to new file '{pathToNewFile}' must exist!".format(pathToNewFile=pathToNewFile)
             return False
         else:
             self.makeDirectory(pathToNewFile)
